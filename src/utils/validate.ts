@@ -1,4 +1,4 @@
-import { ZodSchema } from "zod";
+import type{ ZodSchema } from "zod";
 
 export const validate = (schema: ZodSchema) => {
     return (req: any, res: any, next: any) => {
