@@ -13,7 +13,6 @@ export const redis = pubClient;
 export const redisPub = pubClient;
 export const redisSub = subClient;
 
-export const initRedisAdapter = async (io: Server) => {
-    await Promise.all([pubClient.connect(), subClient.connect()]);
+export const initRedisAdapter = (io: Server) => {
     io.adapter(createAdapter(pubClient, subClient));
 };

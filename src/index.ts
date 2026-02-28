@@ -88,3 +88,5 @@ const shutdown = async () => {
 // Handle termination signals
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
