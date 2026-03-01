@@ -1,0 +1,203 @@
+/* Raster fonts need to be provided by the project; update the URLs below to point
+   to the actual font files you have (woff2/woff/ttf). If they are not available the
+   browser will fall back to sans-serif. */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Raster fonts need to be provided by the project */
+@font-face {
+  font-family: 'FK Raster Roman Compact Smooth';
+  src: url('/fonts/FKRasterRomanCompactSmooth.woff2') format('woff2'),
+    url('/fonts/FKRasterRomanCompactSmooth.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Raster Roman Compact Smooth Placeholder';
+  src: local('FK Raster Roman Compact Smooth Placeholder');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 230 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 230 25% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 25% 12%;
+
+    --primary: 234 85% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 15% 93%;
+    --secondary-foreground: 230 25% 12%;
+
+    --muted: 230 15% 95%;
+    --muted-foreground: 230 10% 46%;
+
+    --accent: 168 70% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 60% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 230 15% 90%;
+    --input: 230 15% 90%;
+    --ring: 234 85% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Quiz-specific tokens */
+    --option-a: 234 85% 58%;
+    --option-b: 168 70% 45%;
+    --option-c: 38 92% 55%;
+    --option-d: 340 75% 55%;
+
+    --countdown-ring: 234 85% 58%;
+    --countdown-urgent: 0 72% 55%;
+
+    --leaderboard-gold: 45 93% 52%;
+    --leaderboard-silver: 220 10% 70%;
+    --leaderboard-bronze: 25 60% 50%;
+  }
+
+  .dark {
+    --background: 230 25% 8%;
+    --foreground: 40 20% 95%;
+
+    --card: 230 20% 12%;
+    --card-foreground: 40 20% 95%;
+
+    --popover: 230 20% 12%;
+    --popover-foreground: 40 20% 95%;
+
+    --primary: 234 85% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 15% 18%;
+    --secondary-foreground: 40 20% 95%;
+
+    --muted: 230 15% 16%;
+    --muted-foreground: 230 10% 60%;
+
+    --accent: 168 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 60% 48%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 60%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 230 15% 20%;
+    --input: 230 15% 20%;
+    --ring: 234 85% 65%;
+
+    --sidebar-background: 230 25% 8%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm;
+  }
+
+  .quiz-option {
+    @apply rounded-xl p-4 font-semibold text-center transition-all duration-200 cursor-pointer border-2 border-transparent;
+  }
+
+  .quiz-option:hover {
+    @apply scale-[1.02] shadow-md;
+  }
+
+  .quiz-option-a {
+    @apply bg-[hsl(var(--option-a)/0.1)] text-[hsl(var(--option-a))] hover:bg-[hsl(var(--option-a)/0.2)];
+  }
+
+  .quiz-option-a.selected {
+    @apply !bg-[hsl(var(--option-a))] !text-white !border-[hsl(var(--option-a))];
+  }
+
+  .quiz-option-b {
+    @apply bg-[hsl(var(--option-b)/0.1)] text-[hsl(var(--option-b))] hover:bg-[hsl(var(--option-b)/0.2)];
+  }
+
+  .quiz-option-b.selected {
+    @apply !bg-[hsl(var(--option-b))] !text-white !border-[hsl(var(--option-b))];
+  }
+
+  .quiz-option-c {
+    @apply bg-[hsl(var(--option-c)/0.1)] text-[hsl(var(--option-c))] hover:bg-[hsl(var(--option-c)/0.2)];
+  }
+
+  .quiz-option-c.selected {
+    @apply !bg-[hsl(var(--option-c))] !text-white !border-[hsl(var(--option-c))];
+  }
+
+  .quiz-option-d {
+    @apply bg-[hsl(var(--option-d)/0.1)] text-[hsl(var(--option-d))] hover:bg-[hsl(var(--option-d)/0.2)];
+  }
+
+  .quiz-option-d.selected {
+    @apply bg-[hsl(var(--option-d))] text-white border-[hsl(var(--option-d))];
+  }
+
+  /* Result states */
+  .quiz-option.correct {
+    @apply !bg-success !text-white !border-success shadow-lg scale-[1.05] z-10 !opacity-100;
+  }
+
+  .quiz-option.incorrect {
+    @apply !bg-destructive !text-white !border-destructive shadow-md !opacity-100;
+  }
+
+  .quiz-option.dimmed {
+    @apply !opacity-40 grayscale-[0.5] scale-[0.98];
+  }
+}
