@@ -1,6 +1,7 @@
 import { redis } from "../lib/redis";
 import { prisma } from "../lib/prisma";
 import { sessionKey } from "../modules/session/session.redis";
+import { getSessionState } from "../modules/session/session.service";
 
 export const checkQuestionExpiry = async (io: any) => {
     try {
@@ -46,6 +47,10 @@ export const checkQuestionExpiry = async (io: any) => {
                         questionIndex: qIndex,
                         correctOptionIndex
                     });
+
+                    // Also broadcast latest state (updated leaderboard)
+                    const state = await getSessionState(id);
+                    io.to(key).emit("session_state", state);
                 }
             }
         }

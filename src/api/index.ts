@@ -4,7 +4,7 @@ import { app } from "./app";
 import { initRedisAdapter } from "./lib/redis";
 import { handleJoin } from "./sockets/handlers/join.handler";
 import { handleAnswer } from "./sockets/handlers/answer.handler";
-import { handleStartQuestion, handleNextQuestion } from "./sockets/handlers/host.handler";
+import { handleStartQuestion, handleNextQuestion, handleHostJoin } from "./sockets/handlers/host.handler";
 import { checkQuestionExpiry } from "./jobs/questionExpiry.job";
 import { prisma } from "./lib/prisma";
 import { redisPub, redisSub } from "./lib/redis";
@@ -54,6 +54,10 @@ io.on("connection", (socket) => {
 
     socket.on("join", async (payload: any) => {
         await handleJoin(io, socket, payload);
+    });
+
+    socket.on("host_join", async (payload: any) => {
+        await handleHostJoin(io, socket, payload);
     });
 
     socket.on("answer", async (payload: any) => {

@@ -8,6 +8,8 @@ import {
 } from "../../modules/session/session.redis";
 import { randomUUID } from "crypto";
 
+import { getSessionState } from "../../modules/session/session.service";
+
 export const handleJoin = async (io: any, socket: any, payload: any) => {
     const { sessionId } = payload;
     // Enforce authenticated id from socket middleware
@@ -38,15 +40,11 @@ export const handleJoin = async (io: any, socket: any, payload: any) => {
 
     socket.join(sessionKey(sessionId));
 
-    const state = await redis.hgetall(sessionKey(sessionId));
-    const leaderboard = await redis.zrevrange(
-        leaderboardKey(sessionId),
-        0,
-        -1,
-        "WITHSCORES"
-    );
+    // Get comprehensive state
+    const state = await getSessionState(sessionId);
 
-    socket.emit("session_state", state);
-    socket.emit("leaderboard", leaderboard);
+    // Broadcast state to room so host gets updates
+    io.to(sessionKey(sessionId)).emit("session_state", state);
+
     socket.emit("joined", { playerId: userId });
 };

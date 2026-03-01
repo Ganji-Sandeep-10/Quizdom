@@ -1,6 +1,26 @@
 import { prisma } from "../../lib/prisma";
 import { redis } from "../../lib/redis";
 import { sessionKey, answeredKey } from "../../modules/session/session.redis";
+import { getSessionState } from "../../modules/session/session.service";
+
+export const handleHostJoin = async (
+    io: any,
+    socket: any,
+    payload: any
+) => {
+    const { sessionId } = payload;
+
+    // Verify session exists
+    const exists = await redis.exists(sessionKey(sessionId));
+    if (!exists) return;
+
+    // Join room
+    socket.join(sessionKey(sessionId));
+
+    // Send initial state
+    const state = await getSessionState(sessionId);
+    socket.emit("session_state", state);
+};
 
 export const handleStartQuestion = async (
     io: any,
