@@ -237,7 +237,7 @@ const Index = () => {
                 onClick={() => setShowCodeInput(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-full font-medium flex items-center gap-2"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4" />
                 Join Quiz
               </Button>
               <Tooltip>
@@ -297,9 +297,9 @@ const Index = () => {
                   <button
                     type="button"
                     onClick={handleCloseInput}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition flex-shrink-0"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition flex-shrink-0"
                   >
-                    <X className="w-8 h-8" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </form>
