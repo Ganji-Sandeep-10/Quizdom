@@ -51,6 +51,7 @@ model Option {
 
 model Session {
   id        String        @id @default(uuid())
+  code      String        @unique
   quizId    String
   quiz      Quiz          @relation(fields: [quizId], references: [id])
   createdAt DateTime      @default(now())

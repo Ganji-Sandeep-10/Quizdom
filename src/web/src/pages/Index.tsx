@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import CategoryCarousel from '../components/CategoryCarousel';
 import logo from '../assets/logo.png';
 import { Input } from '../components/ui/input';
-import { quizApi } from '../services/api';
+import { quizApi, sessionApi } from '../services/api';
 import { toast } from 'sonner';
 import { useAuthStore } from '../stores/authStore';
 
@@ -18,11 +18,23 @@ const Index = () => {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
 
-  const handleJoinSubmit = (e: React.FormEvent) => {
+  const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!sessionCode.trim()) return;
-    sessionStorage.setItem('quiz_player_name', '');
-    navigate(`/session/${sessionCode.trim()}`);
+
+    if (!user) {
+      toast.error('Please login to join a quiz');
+      navigate(`/login?redirect=${encodeURIComponent(`/join?code=${sessionCode.trim()}`)}`);
+      return;
+    }
+
+    try {
+      const { data } = await sessionApi.getByCode(sessionCode.trim());
+      sessionStorage.setItem('quiz_player_name', user.name);
+      navigate(`/session/${data.session.id}`);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Invalid session code');
+    }
   };
 
   const handleCloseInput = () => {
@@ -63,7 +75,7 @@ const Index = () => {
               onClick={async () => {
                 // if user not logged in, redirect to login
                 if (!user) {
-                  navigate('/login');
+                  navigate('/login?redirect=/');
                   return;
                 }
                 setCreatingQuiz(true);
@@ -151,7 +163,7 @@ const Index = () => {
                   placeholder="Enter code"
                   value={sessionCode}
                   onChange={(e) => setSessionCode(e.target.value)}
-                  maxLength={10}
+                  maxLength={6}
                   className="rounded-full pl-14 pr-14 py-6 w-72 text-center font-mono text-lg tracking-widest border-2 border-gray-300 focus:outline-none"
                   required
                 />

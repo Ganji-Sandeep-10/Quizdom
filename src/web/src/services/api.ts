@@ -62,6 +62,7 @@ export const sessionApi = {
   list: (quizId: string) => api.get<{ sessions: import('../types/quiz').Session[] }>(`/sessions/quiz/${quizId}`),
   create: (quizId: string) => api.post<{ session: import('../types/quiz').Session }>(`/sessions/${quizId}`),
   get: (sessionId: string) => api.get<{ session: import('../types/quiz').Session }>(`/sessions/${sessionId}`),
+  getByCode: (code: string) => api.get<{ session: import('../types/quiz').Session }>(`/sessions/code/${code}`),
   start: (sessionId: string) => api.post(`/sessions/${sessionId}/start`),
   end: (sessionId: string) => api.post(`/sessions/${sessionId}/end`),
 };

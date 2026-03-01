@@ -29,6 +29,7 @@ export interface QuestionOption {
 
 export interface Session {
   id: string;
+  code: string;
   quizId: string;
   quizTitle?: string;
   status: 'WAITING' | 'LIVE' | 'ENDED';

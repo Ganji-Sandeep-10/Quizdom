@@ -25,10 +25,18 @@ const PlayerSessionPage = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const store = useSessionStore();
+  const { user, isAuthenticated, isLoading } = useAuthStore();
   const [connected, setConnected] = useState(false);
   const [phase, setPhase] = useState<'waiting' | 'question' | 'result' | 'leaderboard' | 'ended'>('waiting');
 
-  const playerName = sessionStorage.getItem('quiz_player_name') || 'Anonymous';
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast.error('Please login to join a quiz');
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  const playerName = user?.name || 'Anonymous';
 
   const triggerConfetti = () => {
     console.log("Triggering 3-second confetti celebration!");
@@ -181,9 +189,9 @@ const PlayerSessionPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 mb-4 w-50 h-12">
+      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50 px-4 py-4">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="w-50 h-12">
             <img src={logo} alt="Quizdom logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex items-center gap-3">
@@ -195,7 +203,7 @@ const PlayerSessionPage = () => {
             )}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Reconnecting banner */}
       {store.isReconnecting && (

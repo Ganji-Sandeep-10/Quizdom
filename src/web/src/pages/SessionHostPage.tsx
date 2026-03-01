@@ -153,13 +153,32 @@ const SessionHostPage = () => {
               <h1 className="text-2xl font-bold text-foreground">Host Control</h1>
               <SessionStatusBadge status={status} />
             </div>
-            <button
-              onClick={copySessionId}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Copy className="h-3 w-3" />
-              Session: <span className="font-mono">{sessionId}</span>
-            </button>
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                <div>
+                  <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-1">Join Code</p>
+                  <p className="text-4xl font-black text-primary tracking-widest">{session?.code || '------'}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(session?.code || '');
+                    toast.success('Join code copied!');
+                  }}
+                  className="ml-auto"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
+                </Button>
+              </div>
+              <button
+                onClick={copySessionId}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="font-mono opacity-50">ID: {sessionId}</span>
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-2 flex-wrap">

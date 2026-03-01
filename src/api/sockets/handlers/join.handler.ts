@@ -10,10 +10,12 @@ import { randomUUID } from "crypto";
 
 export const handleJoin = async (io: any, socket: any, payload: any) => {
     const { sessionId } = payload;
-    // prefer authenticated id from socket middleware
-    let userId: string | undefined = socket.data.userId;
+    // Enforce authenticated id from socket middleware
+    const userId: string | undefined = socket.data.userId;
+
     if (!userId) {
-        userId = payload.userId || randomUUID();
+        socket.emit("error", "Authentication required to join session");
+        return;
     }
 
     const exists = await redis.exists(sessionKey(sessionId));

@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middleware/auth.middleware";
-import { createSession, getLeaderboard, getSessionsForQuiz, getSession } from "./session.controller";
+import { createSession, getLeaderboard, getSessionsForQuiz, getSession, getSessionByCode } from "./session.controller";
 import { startSession, endSessionHandler } from "./host.controller";
 
 const router = Router();
 
 router.post("/:quizId", authMiddleware, createSession);
 router.get("/quiz/:quizId", authMiddleware, getSessionsForQuiz);
+router.get("/code/:code", authMiddleware, getSessionByCode);
 router.get("/:sessionId", authMiddleware, getSession);
 router.post("/:sessionId/start", authMiddleware, startSession);
 router.post("/:sessionId/end", authMiddleware, endSessionHandler);

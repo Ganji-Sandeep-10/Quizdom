@@ -13,13 +13,45 @@ export const createSession = async (req: any, res: any) => {
     if (quiz.creatorId !== req.user.id)
         return res.status(403).json({ message: "Not allowed" });
 
+    // Generate unique 6-digit code
+    let code: string = "";
+    let isUnique = false;
+    while (!isUnique) {
+        code = Math.floor(100000 + Math.random() * 900000).toString();
+        const existing = await prisma.session.findUnique({ where: { code } });
+        if (!existing) isUnique = true;
+    }
+
     const session = await prisma.session.create({
-        data: { quizId },
+        data: { quizId, code },
     });
 
     await createSessionState(session.id);
 
     res.json({ session });
+};
+
+export const getSessionByCode = async (req: any, res: any) => {
+    const { code } = req.params;
+
+    const session = await prisma.session.findUnique({
+        where: { code },
+        include: { quiz: { include: { _count: { select: { questions: true } } } } },
+    });
+
+    if (!session) return res.status(404).json({ message: "Session not found" });
+
+    const state = await redis.hgetall(`session:${session.id}`);
+
+    res.json({
+        session: {
+            ...session,
+            status: state.status || "WAITING",
+            players: [],
+            currentQuestionIndex: -1,
+            totalQuestions: session.quiz._count.questions
+        }
+    });
 };
 
 export const getLeaderboard = async (req: any, res: any) => {

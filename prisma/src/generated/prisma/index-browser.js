@@ -151,6 +151,7 @@ exports.Prisma.OptionScalarFieldEnum = {
 
 exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
+  code: 'code',
   quizId: 'quizId',
   createdAt: 'createdAt',
   endedAt: 'endedAt'

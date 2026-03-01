@@ -5758,6 +5758,7 @@ export namespace Prisma {
 
   export type SessionMinAggregateOutputType = {
     id: string | null
+    code: string | null
     quizId: string | null
     createdAt: Date | null
     endedAt: Date | null
@@ -5765,6 +5766,7 @@ export namespace Prisma {
 
   export type SessionMaxAggregateOutputType = {
     id: string | null
+    code: string | null
     quizId: string | null
     createdAt: Date | null
     endedAt: Date | null
@@ -5772,6 +5774,7 @@ export namespace Prisma {
 
   export type SessionCountAggregateOutputType = {
     id: number
+    code: number
     quizId: number
     createdAt: number
     endedAt: number
@@ -5781,6 +5784,7 @@ export namespace Prisma {
 
   export type SessionMinAggregateInputType = {
     id?: true
+    code?: true
     quizId?: true
     createdAt?: true
     endedAt?: true
@@ -5788,6 +5792,7 @@ export namespace Prisma {
 
   export type SessionMaxAggregateInputType = {
     id?: true
+    code?: true
     quizId?: true
     createdAt?: true
     endedAt?: true
@@ -5795,6 +5800,7 @@ export namespace Prisma {
 
   export type SessionCountAggregateInputType = {
     id?: true
+    code?: true
     quizId?: true
     createdAt?: true
     endedAt?: true
@@ -5875,6 +5881,7 @@ export namespace Prisma {
 
   export type SessionGroupByOutputType = {
     id: string
+    code: string
     quizId: string
     createdAt: Date
     endedAt: Date | null
@@ -5899,6 +5906,7 @@ export namespace Prisma {
 
   export type SessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    code?: boolean
     quizId?: boolean
     createdAt?: boolean
     endedAt?: boolean
@@ -5909,6 +5917,7 @@ export namespace Prisma {
 
   export type SessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    code?: boolean
     quizId?: boolean
     createdAt?: boolean
     endedAt?: boolean
@@ -5917,6 +5926,7 @@ export namespace Prisma {
 
   export type SessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    code?: boolean
     quizId?: boolean
     createdAt?: boolean
     endedAt?: boolean
@@ -5925,12 +5935,13 @@ export namespace Prisma {
 
   export type SessionSelectScalar = {
     id?: boolean
+    code?: boolean
     quizId?: boolean
     createdAt?: boolean
     endedAt?: boolean
   }
 
-  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "createdAt" | "endedAt", ExtArgs["result"]["session"]>
+  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "quizId" | "createdAt" | "endedAt", ExtArgs["result"]["session"]>
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
     results?: boolean | Session$resultsArgs<ExtArgs>
@@ -5951,6 +5962,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      code: string
       quizId: string
       createdAt: Date
       endedAt: Date | null
@@ -6380,6 +6392,7 @@ export namespace Prisma {
    */
   interface SessionFieldRefs {
     readonly id: FieldRef<"Session", 'String'>
+    readonly code: FieldRef<"Session", 'String'>
     readonly quizId: FieldRef<"Session", 'String'>
     readonly createdAt: FieldRef<"Session", 'DateTime'>
     readonly endedAt: FieldRef<"Session", 'DateTime'>
@@ -7957,6 +7970,7 @@ export namespace Prisma {
 
   export const SessionScalarFieldEnum: {
     id: 'id',
+    code: 'code',
     quizId: 'quizId',
     createdAt: 'createdAt',
     endedAt: 'endedAt'
@@ -8282,6 +8296,7 @@ export namespace Prisma {
     OR?: SessionWhereInput[]
     NOT?: SessionWhereInput | SessionWhereInput[]
     id?: StringFilter<"Session"> | string
+    code?: StringFilter<"Session"> | string
     quizId?: StringFilter<"Session"> | string
     createdAt?: DateTimeFilter<"Session"> | Date | string
     endedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
@@ -8291,6 +8306,7 @@ export namespace Prisma {
 
   export type SessionOrderByWithRelationInput = {
     id?: SortOrder
+    code?: SortOrder
     quizId?: SortOrder
     createdAt?: SortOrder
     endedAt?: SortOrderInput | SortOrder
@@ -8300,6 +8316,7 @@ export namespace Prisma {
 
   export type SessionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    code?: string
     AND?: SessionWhereInput | SessionWhereInput[]
     OR?: SessionWhereInput[]
     NOT?: SessionWhereInput | SessionWhereInput[]
@@ -8308,10 +8325,11 @@ export namespace Prisma {
     endedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
     results?: FinalResultListRelationFilter
-  }, "id">
+  }, "id" | "code">
 
   export type SessionOrderByWithAggregationInput = {
     id?: SortOrder
+    code?: SortOrder
     quizId?: SortOrder
     createdAt?: SortOrder
     endedAt?: SortOrderInput | SortOrder
@@ -8325,6 +8343,7 @@ export namespace Prisma {
     OR?: SessionScalarWhereWithAggregatesInput[]
     NOT?: SessionScalarWhereWithAggregatesInput | SessionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Session"> | string
+    code?: StringWithAggregatesFilter<"Session"> | string
     quizId?: StringWithAggregatesFilter<"Session"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
     endedAt?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
@@ -8600,6 +8619,7 @@ export namespace Prisma {
 
   export type SessionCreateInput = {
     id?: string
+    code: string
     createdAt?: Date | string
     endedAt?: Date | string | null
     quiz: QuizCreateNestedOneWithoutSessionsInput
@@ -8608,6 +8628,7 @@ export namespace Prisma {
 
   export type SessionUncheckedCreateInput = {
     id?: string
+    code: string
     quizId: string
     createdAt?: Date | string
     endedAt?: Date | string | null
@@ -8616,6 +8637,7 @@ export namespace Prisma {
 
   export type SessionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     quiz?: QuizUpdateOneRequiredWithoutSessionsNestedInput
@@ -8624,6 +8646,7 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     quizId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8632,6 +8655,7 @@ export namespace Prisma {
 
   export type SessionCreateManyInput = {
     id?: string
+    code: string
     quizId: string
     createdAt?: Date | string
     endedAt?: Date | string | null
@@ -8639,12 +8663,14 @@ export namespace Prisma {
 
   export type SessionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     quizId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8959,6 +8985,7 @@ export namespace Prisma {
 
   export type SessionCountOrderByAggregateInput = {
     id?: SortOrder
+    code?: SortOrder
     quizId?: SortOrder
     createdAt?: SortOrder
     endedAt?: SortOrder
@@ -8966,6 +8993,7 @@ export namespace Prisma {
 
   export type SessionMaxOrderByAggregateInput = {
     id?: SortOrder
+    code?: SortOrder
     quizId?: SortOrder
     createdAt?: SortOrder
     endedAt?: SortOrder
@@ -8973,6 +9001,7 @@ export namespace Prisma {
 
   export type SessionMinOrderByAggregateInput = {
     id?: SortOrder
+    code?: SortOrder
     quizId?: SortOrder
     createdAt?: SortOrder
     endedAt?: SortOrder
@@ -9620,6 +9649,7 @@ export namespace Prisma {
 
   export type SessionCreateWithoutQuizInput = {
     id?: string
+    code: string
     createdAt?: Date | string
     endedAt?: Date | string | null
     results?: FinalResultCreateNestedManyWithoutSessionInput
@@ -9627,6 +9657,7 @@ export namespace Prisma {
 
   export type SessionUncheckedCreateWithoutQuizInput = {
     id?: string
+    code: string
     createdAt?: Date | string
     endedAt?: Date | string | null
     results?: FinalResultUncheckedCreateNestedManyWithoutSessionInput
@@ -9716,6 +9747,7 @@ export namespace Prisma {
     OR?: SessionScalarWhereInput[]
     NOT?: SessionScalarWhereInput | SessionScalarWhereInput[]
     id?: StringFilter<"Session"> | string
+    code?: StringFilter<"Session"> | string
     quizId?: StringFilter<"Session"> | string
     createdAt?: DateTimeFilter<"Session"> | Date | string
     endedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
@@ -9964,6 +9996,7 @@ export namespace Prisma {
 
   export type SessionCreateWithoutResultsInput = {
     id?: string
+    code: string
     createdAt?: Date | string
     endedAt?: Date | string | null
     quiz: QuizCreateNestedOneWithoutSessionsInput
@@ -9971,6 +10004,7 @@ export namespace Prisma {
 
   export type SessionUncheckedCreateWithoutResultsInput = {
     id?: string
+    code: string
     quizId: string
     createdAt?: Date | string
     endedAt?: Date | string | null
@@ -9994,6 +10028,7 @@ export namespace Prisma {
 
   export type SessionUpdateWithoutResultsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     quiz?: QuizUpdateOneRequiredWithoutSessionsNestedInput
@@ -10001,6 +10036,7 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateWithoutResultsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     quizId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10046,6 +10082,7 @@ export namespace Prisma {
 
   export type SessionCreateManyQuizInput = {
     id?: string
+    code: string
     createdAt?: Date | string
     endedAt?: Date | string | null
   }
@@ -10072,6 +10109,7 @@ export namespace Prisma {
 
   export type SessionUpdateWithoutQuizInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     results?: FinalResultUpdateManyWithoutSessionNestedInput
@@ -10079,6 +10117,7 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateWithoutQuizInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     results?: FinalResultUncheckedUpdateManyWithoutSessionNestedInput
@@ -10086,6 +10125,7 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateManyWithoutQuizInput = {
     id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
