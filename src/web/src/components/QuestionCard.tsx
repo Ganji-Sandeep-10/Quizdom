@@ -12,7 +12,6 @@ interface QuestionCardProps {
   onSelect: (index: number) => void;
 }
 
-const optionStyles = ['quiz-option-a', 'quiz-option-b', 'quiz-option-c', 'quiz-option-d'];
 const optionLabels = ['A', 'B', 'C', 'D'];
 
 export const QuestionCard = ({
@@ -57,7 +56,7 @@ export const QuestionCard = ({
               whileTap={!disabled ? { scale: 0.97 } : {}}
               disabled={disabled}
               onClick={() => onSelect(i)}
-              className={`quiz-option relative flex items-center justify-between overflow-hidden ${optionStyles[i] || optionStyles[0]} ${
+              className={`quiz-option relative flex items-center justify-between overflow-hidden ${
                 isSelected ? 'selected' : ''
               } ${resultClass} ${disabled ? 'cursor-not-allowed' : ''}`}
             >

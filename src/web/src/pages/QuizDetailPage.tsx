@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog';
 import { motion } from 'framer-motion';
-import { stringify } from 'querystring';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 const QuizDetailPage = () => {
   const { quizId } = useParams<{ quizId: string }>();
@@ -52,12 +52,11 @@ const QuizDetailPage = () => {
     setEditingQuestionId(q.id);
     setEqText(q.text);
     // Find matching correct index if possible
-    let cIndex = q.options.findIndex(o => Number(o.id) === Number(q.correctOptionIndex)) || 0; // if correctOptionIndex is accidentally mapped differently, defaults to 0
+    let cIndex = q.options.findIndex(o => Number(o.id) === Number(q.correctOptionIndex)) || 0; 
     if (cIndex === -1 && (q as any).correctOptionIndex !== undefined) {
        cIndex = Number((q as any).correctOptionIndex);
     }
     
-    // Fallback logic for how backend stores correctId vs correctOptionIndex frontend mapping
     const correctOptIndexByRef = q.options.findIndex(o => o.id === (q as any).correctId);
     if (correctOptIndexByRef !== -1) cIndex = correctOptIndexByRef;
 
@@ -208,68 +207,6 @@ const QuizDetailPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Question
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Add Question</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleAddQuestion} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Question Text</Label>
-                    <Input value={qText} onChange={(e) => setQText(e.target.value)} required placeholder="What is...?" />
-                  </div>
-                  {qOptions.map((opt, i) => (
-                    <div key={i} className="space-y-1">
-                      <Label className="text-sm">
-                        Option {String.fromCharCode(65 + i)}
-                        {i === qCorrect && <span className="text-success ml-1">✓ Correct</span>}
-                      </Label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={opt}
-                          onChange={(e) => {
-                            const next = [...qOptions];
-                            next[i] = e.target.value;
-                            setQOptions(next);
-                          }}
-                          required
-                          placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                        />
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={i === qCorrect ? 'default' : 'outline'}
-                          onClick={() => setQCorrect(i)}
-                        >
-                          ✓
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="space-y-2">
-                    <Label>Duration (seconds)</Label>
-                    <Input
-                      type="number"
-                      min={5}
-                      max={120}
-                      value={qDuration}
-                      onChange={(e) => setQDuration(Number(e.target.value))}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={addingQuestion}>
-                    {addingQuestion && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Add Question
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
-
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="destructive" size="sm">
@@ -315,73 +252,176 @@ const QuizDetailPage = () => {
           </div>
         </div>
 
-        {/* Questions */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-foreground">
-              Questions ({quiz.questions.length})
-            </h2>
+        <Tabs defaultValue="questions" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="questions">Questions ({quiz.questions.length})</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions ({sessions.length})</TabsTrigger>
+          </TabsList>
 
-          </div>
-
-          {quiz.questions.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-muted-foreground">
-              No questions yet. Add some to get started!
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {quiz.questions.map((q, i) => (
-                <motion.div
-                  key={q.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="rounded-xl border border-border bg-card p-4"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">
-                        <span className="text-muted-foreground mr-2">Q{i + 1}.</span>
-                        {q.text}
-                      </p>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        {q.options.map((opt, oi) => (
-                          <span
-                            key={opt.id}
-                            className={`text-sm px-3 py-1.5 rounded-lg ${
-                              oi === q.correctOptionIndex
-                                ? 'bg-success/10 text-success font-medium'
-                                : 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {String.fromCharCode(65 + oi)}. {opt.text}
-                          </span>
-                        ))}
+          <TabsContent value="questions">
+            <section className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">Questions</h2>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Question
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Add Question</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleAddQuestion} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Question Text</Label>
+                        <Input value={qText} onChange={(e) => setQText(e.target.value)} required placeholder="What is...?" />
                       </div>
-                    </div>
-                    <div className="flex shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditClick(q)}
-                        className="text-muted-foreground hover:text-foreground shrink-0"
-                      >
-                        <Pencil className="h-4 w-4" />
+                      {qOptions.map((opt, i) => (
+                        <div key={i} className="space-y-1">
+                          <Label className="text-sm">
+                            Option {String.fromCharCode(65 + i)}
+                            {i === qCorrect && <span className="text-success ml-1">✓ Correct</span>}
+                          </Label>
+                          <div className="flex gap-2">
+                            <Input
+                              value={opt}
+                              onChange={(e) => {
+                                const next = [...qOptions];
+                                next[i] = e.target.value;
+                                setQOptions(next);
+                              }}
+                              required
+                              placeholder={`Option ${String.fromCharCode(65 + i)}`}
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={i === qCorrect ? 'default' : 'outline'}
+                              onClick={() => setQCorrect(i)}
+                            >
+                              ✓
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="space-y-2">
+                        <Label>Duration (seconds)</Label>
+                        <Input
+                          type="number"
+                          min={5}
+                          max={120}
+                          value={qDuration}
+                          onChange={(e) => setQDuration(Number(e.target.value))}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={addingQuestion}>
+                        {addingQuestion && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Add Question
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteQuestion(i)}
-                        className="text-destructive hover:text-destructive shrink-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </section>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {quiz.questions.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-muted-foreground">
+                  No questions yet. Add some to get started!
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {quiz.questions.map((q, i) => (
+                    <motion.div
+                      key={q.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="rounded-xl border border-border bg-card p-4"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            <span className="text-muted-foreground mr-2">Q{i + 1}.</span>
+                            {q.text}
+                          </p>
+                          <div className="grid grid-cols-2 gap-2 mt-2">
+                            {q.options.map((opt, oi) => (
+                              <span
+                                key={opt.id}
+                                className={`text-sm px-3 py-1.5 rounded-lg ${
+                                  oi === q.correctOptionIndex
+                                    ? 'bg-success/10 text-success font-medium'
+                                    : 'bg-muted text-muted-foreground'
+                                }`}
+                              >
+                                {String.fromCharCode(65 + oi)}. {opt.text}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditClick(q)}
+                            className="text-muted-foreground hover:text-foreground shrink-0"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteQuestion(i)}
+                            className="text-destructive hover:text-destructive shrink-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="sessions">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">Active Sessions</h2>
+                <Button size="sm" onClick={handleCreateSession} disabled={creatingSess || quiz.questions.length === 0}>
+                  {creatingSess ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
+                  New Session
+                </Button>
+              </div>
+
+
+              {sessions.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-muted-foreground">
+                  No sessions yet
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {sessions.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => navigate(`/dashboard/session/${s.id}`)}
+                      className="w-full text-left rounded-xl border border-border bg-card p-4 hover:shadow-md hover:border-primary/20 transition-all flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="font-medium text-foreground text-sm font-mono">{s.id}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {new Date(s.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <SessionStatusBadge status={s.status} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+          </TabsContent>
+        </Tabs>
 
         {/* Edit Question Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -428,41 +468,6 @@ const QuizDetailPage = () => {
             </form>
           </DialogContent>
         </Dialog>
-
-        {/* Sessions */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Sessions</h2>
-            <Button size="sm" onClick={handleCreateSession} disabled={creatingSess || quiz.questions.length === 0}>
-              {creatingSess ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
-              New Session
-            </Button>
-          </div>
-
-          {sessions.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-muted-foreground">
-              No sessions yet
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {sessions.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => navigate(`/dashboard/session/${s.id}`)}
-                  className="w-full text-left rounded-xl border border-border bg-card p-4 hover:shadow-md hover:border-primary/20 transition-all flex items-center justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-foreground text-sm font-mono">{s.id}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {new Date(s.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                  <SessionStatusBadge status={s.status} />
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
       </main>
     </div>
   );

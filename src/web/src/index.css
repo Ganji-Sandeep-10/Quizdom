@@ -161,43 +161,15 @@
   }
 
   .quiz-option {
-    @apply rounded-xl p-4 font-semibold text-center transition-all duration-200 cursor-pointer border-2 border-transparent;
+    @apply rounded-xl p-4 font-semibold text-center transition-all duration-200 cursor-pointer border-2 border-border bg-card hover:bg-muted;
   }
 
   .quiz-option:hover {
     @apply scale-[1.02] shadow-md;
   }
 
-  .quiz-option-a {
-    @apply bg-[hsl(var(--option-a)/0.1)] text-[hsl(var(--option-a))] hover:bg-[hsl(var(--option-a)/0.2)];
-  }
-
-  .quiz-option-a.selected {
-    @apply !bg-[hsl(var(--option-a))] !text-white !border-[hsl(var(--option-a))];
-  }
-
-  .quiz-option-b {
-    @apply bg-[hsl(var(--option-b)/0.1)] text-[hsl(var(--option-b))] hover:bg-[hsl(var(--option-b)/0.2)];
-  }
-
-  .quiz-option-b.selected {
-    @apply !bg-[hsl(var(--option-b))] !text-white !border-[hsl(var(--option-b))];
-  }
-
-  .quiz-option-c {
-    @apply bg-[hsl(var(--option-c)/0.1)] text-[hsl(var(--option-c))] hover:bg-[hsl(var(--option-c)/0.2)];
-  }
-
-  .quiz-option-c.selected {
-    @apply !bg-[hsl(var(--option-c))] !text-white !border-[hsl(var(--option-c))];
-  }
-
-  .quiz-option-d {
-    @apply bg-[hsl(var(--option-d)/0.1)] text-[hsl(var(--option-d))] hover:bg-[hsl(var(--option-d)/0.2)];
-  }
-
-  .quiz-option-d.selected {
-    @apply bg-[hsl(var(--option-d))] text-white border-[hsl(var(--option-d))];
+  .quiz-option.selected {
+    @apply !border-primary !text-primary bg-[hsl(var(--primary)/0.05)] shadow-md;
   }
 
   /* Result states */

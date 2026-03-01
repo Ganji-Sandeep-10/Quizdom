@@ -102,7 +102,12 @@ export const getProfile = async (req: any, res: any) => {
         }
     });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) 
+    return res.status(404).json({
+        success: false,
+        message: null,
+        error: "USER_NOT_FOUND" 
+    });
 
     // Fetch participation history
     const participations = await prisma.finalResult.findMany({
