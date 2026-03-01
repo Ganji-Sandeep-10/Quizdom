@@ -1,22 +1,54 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Plus, ChevronRight, BarChart3, Minus, X, Loader2 } from 'lucide-react';
+import { Plus, ChevronRight, ArrowUpRight, BarChart3, Minus, X, Loader2, Menu, LayoutDashboard, Settings, Sun, Moon, LogOut, User as UserIcon, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import CategoryCarousel from '../components/CategoryCarousel';
+import FloatingActionButton from '../components/FloatingActionButton';
 import logo from '../assets/logo.png';
 import { Input } from '../components/ui/input';
 import { quizApi, sessionApi } from '../services/api';
 import { toast } from 'sonner';
 import { useAuthStore } from '../stores/authStore';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../components/ui/sheet";
+import { useTheme } from '../components/theme-provider';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../components/ui/tooltip";
 
 const Index = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
   const [sessionCode, setSessionCode] = useState('');
   const [creatingQuiz, setCreatingQuiz] = useState(false);
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
+  const { user, logout } = useAuthStore();
+  const { theme, setTheme } = useTheme();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed', err);
+      navigate('/login');
+    }
+  };
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,75 +75,133 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="min-h-screen bg-white dark:bg-zinc-950 flex flex-col" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white px-4 py-4 sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between">
+      <header className="border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-4 sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between text-black dark:text-white">
           {/* Left: User Avatar (Quizdom logo) */}
           <div className="w-50 h-12 ">
             <img src={logo} alt="Quizdom logo" className="w-full h-full object-cover" />
           </div>
 
-          {/* Right: menu toggle + navigation buttons + home + profile */}
+          {/* Right: navigation buttons + profile */}
           <div className="flex items-center gap-4 justify-center">
-            {menuOpen && (
-              <div className="flex items-center gap-2">
-                <Link to="/" className="h-10 flex items-center justify-center px-4 rounded-full bg-black text-white text-sm  hover:bg-gray-800 transition">Home</Link>
-                <Link to="/features" className="h-10 flex items-center justify-center px-4 rounded-full bg-black text-white text-sm  hover:bg-gray-800 transition">Features</Link>
-                <Link to="/about" className="h-10 flex items-center justify-center px-4 rounded-full bg-black text-white text-sm  hover:bg-gray-800 transition">About</Link>
-                <Link to="/faq" className="h-10 flex items-center justify-center px-4 rounded-full bg-black text-white text-sm  hover:bg-gray-800 transition">FAQ</Link>
-              </div>
-            )}
-
-            <button
-              onClick={() => setMenuOpen(o => !o)}
-              className="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white hover:bg-gray-800 transition"
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="h-12 w-12 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full border-2 border-gray-200 dark:border-zinc-800"
             >
-              {menuOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-            </button>
-
-            {/* when clicked, call backend to create a new quiz and navigate to it */}
-            <button
-              onClick={async () => {
-                // if user not logged in, redirect to login
-                if (!user) {
-                  navigate('/login?redirect=/');
-                  return;
-                }
-                setCreatingQuiz(true);
-                try {
-                  // supply a default title so the request passes validation
-                  const { data } = await quizApi.create({ title: 'Untitled quiz', description: '', questions: [] });
-                  toast.success('Quiz created!');
-                  navigate(`/dashboard/quiz/${data.quiz.id}`);
-                } catch (err) {
-                  toast.error('Failed to create quiz');
-                } finally {
-                  setCreatingQuiz(false);
-                }
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center justify-center"
-              disabled={creatingQuiz}
-            >
-              {creatingQuiz && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Create Quiz
-            </button>
+              {theme === 'dark' ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+            </Button>
 
             <Link to="/profile">
-              <div className="w-12 h-12 rounded-full overflow-hidden cursor-pointer">
+              <div className="w-12 h-12 rounded-full overflow-hidden cursor-pointer border border-gray-200 dark:border-zinc-800">
                 <img
-                  src="https://api.dicebear.com/7.x/adventurer/png?seed=Carlos"
+                  src={`https://api.dicebear.com/7.x/lorelei/png?seed=${user?.avatarSeed || user?.name || 'Carlos'}`}
                   alt="User Avatar"
                   className="w-full h-full object-cover"
                 />
               </div>
             </Link>
+
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="h-12 w-12 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full border-2 border-gray-200 dark:border-zinc-800">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <div className="flex flex-col gap-4 mt-8">
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg"
+                    onClick={() => navigate('/profile')}
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    <span>Profile</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                    onClick={async () => {
+                      if (!user) {
+                        navigate('/login?redirect=/');
+                        return;
+                      }
+                      setCreatingQuiz(true);
+                      try {
+                        const { data } = await quizApi.create({ title: 'Untitled quiz', description: '', questions: [] });
+                        toast.success('Quiz created!');
+                        navigate(`/dashboard/quiz/${data.quiz.id}`);
+                      } catch (err) {
+                        toast.error('Failed to create quiz');
+                      } finally {
+                        setCreatingQuiz(false);
+                      }
+                    }}
+                    disabled={creatingQuiz}
+                  >
+                    {creatingQuiz ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+                    <span>Create Quiz</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg"
+                    onClick={() => navigate('/results')}
+                  >
+                    <Trophy className="h-5 w-5" />
+                    <span>My Results</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    <LayoutDashboard className="h-5 w-5" />
+                    <span>Quiz Dashboard</span>
+                  </Button>
+                  
+                  <div className="h-px bg-border my-2" />
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between h-12 px-4 text-lg"
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  >
+                    <div className="flex items-center gap-3">
+                      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                      <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                    </div>
+                  </Button>
+
+                  <div className="h-px bg-border my-2" />
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg"
+                    onClick={() => navigate('/settings')}
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Settings</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start gap-3 h-12 text-lg text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>Logout</span>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-20">
+        <div className='pt-12'/>
+
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -120,7 +210,7 @@ const Index = () => {
           className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-8 text-sm font-medium"
         >
           <span>👑</span>
-          Mom was right, studying pays
+          Think Fast...Win Faster...
         </motion.div>
 
         {/* Main Heading */}
@@ -128,10 +218,10 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-6xl sm:text-7xl font-bold text-black text-center mb-12 leading-tight max-w-4xl"
+          className="text-6xl sm:text-5xl font-bold text-black dark:text-white text-center mb-12 leading-tight max-w-4xl"
           style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}
         >
-          The ultimate fun<br />knowledge matters
+          Turn Knowledge Into Competition.<br/>Make Every Answer Count.
         </motion.h1>
 
         {/* Join Quiz Button / Input */}
@@ -139,53 +229,127 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
+          className="mb-8 flex items-center justify-center gap-3"
         >
           {!showCodeInput ? (
-            <Button
-              onClick={() => setShowCodeInput(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-full font-medium flex items-center gap-2"
-            >
-              <ChevronRight className="w-5 h-5" />
-              Join Quiz
-            </Button>
+            <>
+              <Button
+                onClick={() => setShowCodeInput(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-full font-medium flex items-center gap-2"
+              >
+                <ChevronRight className="w-5 h-5" />
+                Join Quiz
+              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={async () => {
+                      if (!user) {
+                        navigate('/login?redirect=/');
+                        return;
+                      }
+                      setCreatingQuiz(true);
+                      try {
+                        const { data } = await quizApi.create({ title: 'Untitled quiz', description: '', questions: [] });
+                        toast.success('Quiz created!');
+                        navigate(`/dashboard/quiz/${data.quiz.id}`);
+                      } catch (err) {
+                        toast.error('Failed to create quiz');
+                      } finally {
+                        setCreatingQuiz(false);
+                      }
+                    }}
+                    disabled={creatingQuiz}
+                    variant="outline"
+                    className="w-12 h-12 rounded-full border-2 border-blue-700 text-blue-700 hover:bg-blue-600 hover:text-white transition-all p-0 flex items-center justify-center shrink-0"
+                  >
+                    {creatingQuiz ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Plus className="w-6 h-6" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Create quiz</p>
+                </TooltipContent>
+              </Tooltip>
+            </>
           ) : (
-            <form onSubmit={handleJoinSubmit}>
-              <div className="relative">
-                <button
-                  type="submit"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition flex-shrink-0"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                <Input
-                  type="text"
-                  placeholder="Enter code"
-                  value={sessionCode}
-                  onChange={(e) => setSessionCode(e.target.value)}
-                  maxLength={6}
-                  className="rounded-full pl-14 pr-14 py-6 w-72 text-center font-mono text-lg tracking-widest border-2 border-gray-300 focus:outline-none"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={handleCloseInput}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition flex-shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </form>
+            <div className="flex items-center gap-3">
+              <form onSubmit={handleJoinSubmit}>
+                <div className="relative">
+                  <button
+                    type="submit"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition flex-shrink-0"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <Input
+                    type="text"
+                    placeholder="Enter code"
+                    value={sessionCode}
+                    onChange={(e) => setSessionCode(e.target.value)}
+                    maxLength={6}
+                    className="rounded-full pl-14 pr-14 py-6 w-72 text-center font-mono text-lg tracking-widest border-2 border-gray-300 focus:outline-none"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCloseInput}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition flex-shrink-0"
+                  >
+                    <X className="w-8 h-8" />
+                  </button>
+                </div>
+              </form>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={async () => {
+                      if (!user) {
+                        navigate('/login?redirect=/');
+                        return;
+                      }
+                      setCreatingQuiz(true);
+                      try {
+                        const { data } = await quizApi.create({ title: 'Untitled quiz', description: '', questions: [] });
+                        toast.success('Quiz created!');
+                        navigate(`/dashboard/quiz/${data.quiz.id}`);
+                      } catch (err) {
+                        toast.error('Failed to create quiz');
+                      } finally {
+                        setCreatingQuiz(false);
+                      }
+                    }}
+                    disabled={creatingQuiz}
+                    variant="outline"
+                    className="w-12 h-12 rounded-full border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white transition-all p-0 flex items-center justify-center shrink-0"
+                  >
+                    {creatingQuiz ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Plus className="w-6 h-6" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Create quiz</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           )}
         </motion.div>
 
         {/* Developer category carousel */}
-        <section className="w-full pb-10 bg-gray-50">
+        <section className="w-full pb-1 bg-gray-50">
           <CategoryCarousel />
+        </section>
+        <div className="text-center pt-2 pb-7">
           <h2 className="text-2xl font-bold text-center mt-6">
             Build quizzes on any topic — pick a category above
           </h2>
-        </section>
+        </div>
 
         {/* Three Step Cards */}
         <motion.div
@@ -270,6 +434,7 @@ const Index = () => {
       <footer className="border-t border-gray-200 py-6 px-4 text-center text-sm text-gray-600">
         <p>© 2026 QuizMeter. Built for live engagement.</p>
       </footer>
+      <FloatingActionButton />
     </div>
   );
 };

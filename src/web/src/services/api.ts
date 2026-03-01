@@ -27,16 +27,18 @@ export default api;
 // Auth API
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post<{ user: { id: string; email: string; name: string } }>('/auth/login', { email, password }),
+    api.post<{ user: { id: string; email: string; name: string; avatarSeed?: string } }>('/auth/login', { email, password }),
   register: (name: string, email: string, password: string) =>
-    api.post<{ user: { id: string; email: string; name: string } }>('/auth/register', { name, email, password }),
-  me: () => api.get<{ user: { id: string; email: string; name: string } }>('/auth/me'),
+    api.post<{ user: { id: string; email: string; name: string; avatarSeed?: string } }>('/auth/register', { name, email, password }),
+  me: () => api.get<{ user: { id: string; email: string; name: string; avatarSeed?: string } }>('/auth/me'),
   logout: () => api.post('/auth/logout'),
   profile: () => api.get<{
-    user: { id: string; email: string; name: string; createdAt: string };
+    user: { id: string; email: string; name: string; avatarSeed?: string; createdAt: string };
     quizzes: any[];
     participations: any[];
   }>('/auth/profile'),
+  updateProfile: (data: { name?: string; avatarSeed?: string }) =>
+    api.put<{ user: { id: string; email: string; name: string; avatarSeed?: string } }>('/auth/profile', data),
 };
 
 

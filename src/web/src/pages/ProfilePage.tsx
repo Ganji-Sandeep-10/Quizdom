@@ -14,6 +14,7 @@ interface ProfileData {
     id: string;
     email: string;
     name: string;
+    avatarSeed?: string;
     createdAt: string;
   };
   quizzes: {
@@ -75,8 +76,12 @@ const ProfilePage = () => {
           className="relative mb-10 overflow-hidden rounded-3xl bg-gradient-to-r from-primary/10 via-background to-primary/5 border border-border p-8 md:p-12"
         >
           <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-            <div className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary/20 flex items-center justify-center text-primary border-4 border-background shadow-xl">
-              <User size={48} />
+            <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-background shadow-xl overflow-hidden shadow-primary/20 bg-background">
+              <img
+                src={`https://api.dicebear.com/7.x/lorelei/png?seed=${data.user.avatarSeed || data.user.name || 'Carlos'}`}
+                alt="User Avatar"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             <div className="text-center md:text-left">

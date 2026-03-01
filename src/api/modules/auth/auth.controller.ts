@@ -28,14 +28,14 @@ export const register = async (req: any, res: any) => {
         path: '/',
     });
 
-    res.json({ user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ user: { id: user.id, email: user.email, name: user.name, avatarSeed: user.avatarSeed } });
 };
 
 export const login = async (req: any, res: any) => {
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) return res.status(400).json({ message: "Account not found. Please register first." });
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ message: "Invalid credentials" });
@@ -54,7 +54,7 @@ export const login = async (req: any, res: any) => {
         path: '/',
     });
 
-    res.json({ user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ user: { id: user.id, email: user.email, name: user.name, avatarSeed: user.avatarSeed } });
 };
 
 export const me = async (req: any, res: any) => {
@@ -63,7 +63,7 @@ export const me = async (req: any, res: any) => {
     });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ user: { id: user.id, email: user.email, name: user.name, avatarSeed: user.avatarSeed } });
 };
 
 export const logout = async (req: any, res: any) => {
@@ -85,6 +85,7 @@ export const getProfile = async (req: any, res: any) => {
             id: true,
             email: true,
             name: true,
+            avatarSeed: true,
             createdAt: true,
             quizzes: {
                 select: {
@@ -126,6 +127,7 @@ export const getProfile = async (req: any, res: any) => {
             id: user.id,
             email: user.email,
             name: user.name,
+            avatarSeed: user.avatarSeed,
             createdAt: user.createdAt
         },
         quizzes: user.quizzes,
@@ -137,4 +139,31 @@ export const getProfile = async (req: any, res: any) => {
             playedAt: p.session.createdAt
         }))
     });
+};
+
+export const updateProfile = async (req: any, res: any) => {
+    const { name, avatarSeed } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const user = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                ...(name && { name }),
+                ...(avatarSeed !== undefined && { avatarSeed }),
+            },
+        });
+
+        res.json({
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                avatarSeed: user.avatarSeed
+            }
+        });
+    } catch (error) {
+        console.error("Update profile error:", error);
+        res.status(500).json({ message: "Failed to update profile" });
+    }
 };

@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  quizzes   Quiz[]
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  avatarSeed String?
+  quizzes    Quiz[]
+  createdAt  DateTime @default(now())
 }
 
 model Quiz {

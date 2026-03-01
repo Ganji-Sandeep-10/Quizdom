@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import {Link, useParams, useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
 import { connectSocket, disconnectSocket } from '../services/socket';
 import { CountdownTimer } from '../components/CountdownTimer';
@@ -192,7 +192,9 @@ const PlayerSessionPage = () => {
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50 px-4 py-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="w-50 h-12">
-            <img src={logo} alt="Quizdom logo" className="w-full h-full object-cover" />
+            <Link to="/">
+              <img src={logo} alt="Quizdom logo" className="w-full h-full object-cover" />
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             {store.status && <SessionStatusBadge status={store.status} />}

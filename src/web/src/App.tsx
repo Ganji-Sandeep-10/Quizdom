@@ -15,6 +15,8 @@ import SessionHostPage from "./pages/SessionHostPage";
 import JoinPage from "./pages/JoinPage";
 import PlayerSessionPage from "./pages/PlayerSessionPage";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import ResultsPage from "./pages/ResultsPage";
 import NotFound from "./pages/NotFound";
 
 
@@ -28,30 +30,36 @@ const AuthInit = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthInit>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/join" element={<JoinPage />} />
-            <Route path="/session/:sessionId" element={<PlayerSessionPage />} />
-            <Route path="/dashboard" element={<AuthGuard><DashboardPage /></AuthGuard>} />
-            <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />
-            <Route path="/dashboard/quiz/:quizId" element={<AuthGuard><QuizDetailPage /></AuthGuard>} />
+import { ThemeProvider } from './components/theme-provider';
 
-            <Route path="/dashboard/session/:sessionId" element={<AuthGuard><SessionHostPage /></AuthGuard>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthInit>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+const App = () => (
+  <ThemeProvider defaultTheme="light" storageKey="quizmeter-ui-theme">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthInit>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/join" element={<JoinPage />} />
+              <Route path="/session/:sessionId" element={<PlayerSessionPage />} />
+              <Route path="/dashboard" element={<AuthGuard><DashboardPage /></AuthGuard>} />
+              <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />
+              <Route path="/settings" element={<AuthGuard><SettingsPage /></AuthGuard>} />
+              <Route path="/results" element={<AuthGuard><ResultsPage /></AuthGuard>} />
+              <Route path="/dashboard/quiz/:quizId" element={<AuthGuard><QuizDetailPage /></AuthGuard>} />
+
+              <Route path="/dashboard/session/:sessionId" element={<AuthGuard><SessionHostPage /></AuthGuard>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthInit>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

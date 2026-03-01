@@ -10,6 +10,7 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  updateUser: (data: { name?: string; avatarSeed?: string }) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -42,5 +43,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
+  },
+
+  updateUser: async (updateData) => {
+    const { data } = await authApi.updateProfile(updateData);
+    set({ user: data.user });
   },
 }));
