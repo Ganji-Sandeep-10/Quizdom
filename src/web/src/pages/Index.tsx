@@ -31,6 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../components/ui/tooltip";
+import './HomeBackground.css';
 
 const Index = () => {
   const [showCodeInput, setShowCodeInput] = useState(false);
@@ -75,7 +76,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 flex flex-col" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="home-bg flex flex-col" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <header className="border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-4 sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between text-black dark:text-white">
@@ -431,7 +432,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 py-6 px-4 text-center text-sm text-gray-600">
+      <footer className="py-6 px-4 text-center text-sm text-gray-600">
         <p>© 2026 QuizMeter. Built for live engagement.</p>
       </footer>
       <FloatingActionButton />
