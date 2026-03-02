@@ -15,7 +15,7 @@ const rankColors = [
 ];
 
 export const Leaderboard = ({ entries, currentPlayerId, maxEntries = 10 }: LeaderboardProps) => {
-  const displayed = entries.slice(0, maxEntries);
+  const displayed = (entries || []).slice(0, maxEntries);
 
   return (
     <div className="space-y-2">
@@ -60,7 +60,7 @@ export const Leaderboard = ({ entries, currentPlayerId, maxEntries = 10 }: Leade
           </motion.div>
         ))}
       </AnimatePresence>
-      {entries.length === 0 && (
+      {!entries || entries.length === 0 && (
         <p className="text-center text-muted-foreground py-8">No scores yet</p>
       )}
     </div>
