@@ -67,4 +67,6 @@ export const sessionApi = {
   getByCode: (code: string) => api.get<{ session: import('../types/quiz').Session }>(`/sessions/code/${code}`),
   start: (sessionId: string) => api.post(`/sessions/${sessionId}/start`),
   end: (sessionId: string) => api.post(`/sessions/${sessionId}/end`),
+  leaderboard: (sessionId: string, page = 0, limit = 20) =>
+    api.get<(string | number)[]>(`/sessions/${sessionId}/leaderboard?page=${page}&limit=${limit}`),
 };

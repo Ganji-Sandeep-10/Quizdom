@@ -207,6 +207,10 @@ const QuizDetailPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button size="sm" onClick={handleCreateSession} disabled={creatingSess || quiz.questions.length === 0}>
+              {creatingSess ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
+              New Session
+            </Button>
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="destructive" size="sm">
@@ -389,10 +393,6 @@ const QuizDetailPage = () => {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-foreground">Active Sessions</h2>
-                <Button size="sm" onClick={handleCreateSession} disabled={creatingSess || quiz.questions.length === 0}>
-                  {creatingSess ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
-                  New Session
-                </Button>
               </div>
 
 

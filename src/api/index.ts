@@ -49,6 +49,8 @@ io.use((socket, next) => {
     });
 })();
 
+app.set("io", io);
+
 io.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
 

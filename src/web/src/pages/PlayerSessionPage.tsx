@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState } from 'react';
 import {Link, useParams, useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
 import { connectSocket, disconnectSocket } from '../services/socket';
+import { sessionApi } from '../services/api';
 import { CountdownTimer } from '../components/CountdownTimer';
 import { QuestionCard } from '../components/QuestionCard';
 import { Leaderboard } from '../components/Leaderboard';
@@ -19,6 +20,7 @@ import type {
   QuestionStartedPayload,
   QuestionEndedPayload,
   LeaderboardPayload,
+  LeaderboardEntry,
 } from '../types/quiz';
 
 const PlayerSessionPage = () => {
@@ -27,7 +29,7 @@ const PlayerSessionPage = () => {
   const store = useSessionStore();
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const [connected, setConnected] = useState(false);
-  const [phase, setPhase] = useState<'waiting' | 'question' | 'result' | 'leaderboard' | 'ended'>('waiting');
+  const [phase, setPhase] = useState<'waiting' | 'question' | 'result' | 'leaderboard' | 'finalizing' | 'ended'>('waiting');
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -46,7 +48,7 @@ const PlayerSessionPage = () => {
 
     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-    const interval: any = setInterval(function() {
+    const interval: ReturnType<typeof setInterval> = setInterval(function() {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
@@ -79,7 +81,7 @@ const PlayerSessionPage = () => {
       if (payload.leaderboard) store.setLeaderboard(payload.leaderboard);
 
       if (payload.status === 'ENDED') {
-        setPhase('ended');
+        setPhase('finalizing');
       } else if (payload.question) {
         store.setQuestion(payload.question);
         const remaining = payload.question.endTime - Date.now();
@@ -105,6 +107,10 @@ const PlayerSessionPage = () => {
       console.log("Current selected answer (from getState):", currentSelected);
 
       const isCorrect = currentSelected === payload.correctOptionIndex;
+
+      if (isCorrect) {
+        triggerConfetti();
+      }
       
       store.setQuestionResult({
         questionIndex: payload.questionIndex,
@@ -114,9 +120,6 @@ const PlayerSessionPage = () => {
       });
 
       setPhase('result');
-      if (isCorrect) {
-        triggerConfetti();
-      }
     });
 
     socket.on('leaderboard', (payload: LeaderboardPayload) => {
@@ -130,6 +133,15 @@ const PlayerSessionPage = () => {
       setPhase('leaderboard');
     });
 
+    socket.on('session_ended', (payload: { leaderboard: LeaderboardEntry[] }) => {
+      console.log("Session ended event received:", payload.leaderboard);
+      if (payload?.leaderboard?.length) {
+        store.setLeaderboard(payload.leaderboard);
+      }
+      setPhase('finalizing');
+      triggerConfetti();
+    });
+
     socket.on('error', (msg: string) => {
       toast.error(msg);
     });
@@ -140,6 +152,38 @@ const PlayerSessionPage = () => {
 
     return socket;
   }, [sessionId, playerName]);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    if (phase !== 'finalizing') return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await sessionApi.leaderboard(sessionId, 0, 50);
+        if (Array.isArray(data) && data.length) {
+          // data is raw redis array (WITHSCORES) from backend
+          const nameById = new Map(useSessionStore.getState().players.map(p => [p.id, p.name]));
+          const entries: LeaderboardEntry[] = [];
+          for (let i = 0; i < data.length; i += 2) {
+            const playerId = String(data[i]);
+            entries.push({
+              playerId,
+              playerName: nameById.get(playerId) || 'Unknown',
+              score: Number(data[i + 1]),
+              rank: (i / 2) + 1,
+            });
+          }
+          store.setLeaderboard(entries);
+        }
+      } catch {
+        // ignore; we will still show whatever we have
+      } finally {
+        setPhase('ended');
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [phase, sessionId]);
 
   useEffect(() => {
     if (!sessionId) {
@@ -155,6 +199,7 @@ const PlayerSessionPage = () => {
       socket.off('question_ended');
       socket.off('leaderboard');
       socket.off('ready_for_next');
+      socket.off('session_ended');
       socket.off('error');
       socket.off('joined');
       disconnectSocket();
@@ -345,6 +390,22 @@ const PlayerSessionPage = () => {
               <p className="text-center text-muted-foreground text-sm mt-6">
                 Waiting for next question...
               </p>
+            </motion.div>
+          )}
+
+          {phase === 'finalizing' && (
+            <motion.div
+              key="finalizing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center min-h-[60vh] text-center"
+            >
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Quiz has ended</h2>
+              <p className="text-muted-foreground">Preparing leaderboard...</p>
             </motion.div>
           )}
 

@@ -71,12 +71,18 @@ const SessionHostPage = () => {
       // Host can move to next
     });
 
+    socket.on('session_ended', (payload: { leaderboard: LeaderboardEntry[] }) => {
+      setLeaderboard(payload.leaderboard);
+      setStatus('ENDED');
+    });
+
     return () => {
       socket.off('session_state');
       socket.off('leaderboard');
       socket.off('question_started');
       socket.off('question_ended');
       socket.off('ready_for_next');
+      socket.off('session_ended');
       disconnectSocket();
     };
   }, [sessionId, fetchSession]);
@@ -112,8 +118,9 @@ const SessionHostPage = () => {
   const handleEndSession = async () => {
     setActionLoading(true);
     try {
-      await sessionApi.end(sessionId!);
+      const { data } = await sessionApi.end(sessionId!);
       setStatus('ENDED');
+      if (data.leaderboard) setLeaderboard(data.leaderboard);
       toast.success('Session ended');
     } catch {
       toast.error('Failed to end session');
@@ -190,14 +197,21 @@ const SessionHostPage = () => {
             )}
             {status === 'LIVE' && (
               <>
-                <Button onClick={() => handleStartQuestion()} variant="default" disabled={actionLoading}>
-                  {actionLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
-                  Start Question
-                </Button>
-                <Button onClick={handleNextQuestion} variant="secondary" disabled={actionLoading}>
-                  {actionLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <SkipForward className="h-4 w-4 mr-1" />}
-                  Next
-                </Button>
+                {currentQIndex < 0 ? (
+                  <Button onClick={() => handleStartQuestion()} variant="default" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />}
+                    Start Quiz
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleNextQuestion}
+                    variant="default"
+                    disabled={actionLoading || (totalQuestions > 0 && currentQIndex + 1 >= totalQuestions)}
+                  >
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <SkipForward className="h-4 w-4 mr-1" />}
+                    Next Question
+                  </Button>
+                )}
                 <Button onClick={handleEndSession} variant="destructive" disabled={actionLoading}>
                   {actionLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Square className="h-4 w-4 mr-1" />}
                   End

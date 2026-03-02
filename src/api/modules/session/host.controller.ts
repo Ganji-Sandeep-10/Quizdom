@@ -38,7 +38,17 @@ export const endSessionHandler = async (req: any, res: any) => {
     if (session.quiz.creatorId !== req.user.id)
         return res.status(403).json({ message: "Not allowed" });
 
-    await endSession(sessionId);
+    const io = req.app.get("io");
 
-    res.json({ message: "Session ended" });
+    if (io) {
+        io.to(sessionKey(sessionId)).emit("session_ending");
+    }
+
+    const leaderboard = await endSession(sessionId);
+
+    if (io) {
+        io.to(sessionKey(sessionId)).emit("session_ended", { leaderboard });
+    }
+
+    res.json({ message: "Session ended", leaderboard });
 };
